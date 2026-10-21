@@ -22,7 +22,7 @@
             --border: #e3edf6;
             --shadow-sm: 0 4px 18px rgba(58,134,200,0.12);
             --shadow-lg: 0 24px 50px rgba(40,80,130,0.18);
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition: all 0.5s cubic-bezier(0.22, 0.8, 0.3, 1);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Quicksand', sans-serif; }
         html { scroll-behavior: smooth; }
@@ -136,9 +136,7 @@
         .section-head p { color: var(--text-light); margin-top: 10px; }
         .section-head .line { width: 70px; height: 3px; background: linear-gradient(90deg, var(--primary), var(--gold)); margin: 16px auto 0; border-radius: 3px; }
 
-        /* Reveal */
-        .reveal { opacity: 0; transform: translateY(35px); transition: opacity 0.8s ease, transform 0.8s ease; }
-        .reveal.show { opacity: 1; transform: none; }
+        /* Reveal: xem khối CSS bổ sung ở cuối */
 
         /* ===== Danh mục ===== */
         .cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -162,7 +160,7 @@
 
         /* ===== Sản phẩm ===== */
         .products { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 30px; }
-        .product-card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: var(--shadow-sm); transition: var(--transition); position: relative; cursor: pointer; display: flex; flex-direction: column; border: 1px solid var(--border); animation: cardIn 0.6s ease both; }
+        .product-card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: var(--shadow-sm); transition: var(--transition); position: relative; cursor: pointer; display: flex; flex-direction: column; border: 1px solid var(--border); }
         @keyframes cardIn { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: none; } }
         .product-card:hover { transform: translateY(-10px); box-shadow: var(--shadow-lg); }
         .img-wrapper { overflow: hidden; position: relative; padding-top: 110%; background: linear-gradient(135deg,#dcecfb,#e8f7ff); }
@@ -359,7 +357,7 @@
         @keyframes toastOut { to { opacity: 0; transform: translateX(60px); } }
 
         /* ===== Liên hệ nổi ===== */
-        .floating-contact { position: fixed; right: 26px; bottom: 26px; display: flex; flex-direction: column; gap: 14px; z-index: 999; }
+        .floating-contact { position: fixed; right: 26px; bottom: 100px; display: flex; flex-direction: column; gap: 14px; z-index: 999; }
         .contact-btn { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 21px; text-decoration: none; box-shadow: 0 10px 20px rgba(0,0,0,0.15); transition: var(--transition); position: relative; border: none; cursor: pointer; }
         .contact-btn:hover { transform: scale(1.1) translateY(-5px); }
         .contact-btn[data-tooltip]::after { content: attr(data-tooltip); position: absolute; right: 72px; background: var(--text); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; opacity: 0; pointer-events: none; transition: var(--transition); transform: translateX(10px); }
@@ -404,10 +402,130 @@
             .toast-wrap { right: 10px; left: 10px; }
             .cd-box { min-width: 58px; }
         }
-        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; translate: none; scale: none; } #scroll-progress { display: none; } }
+
+        /* ===== Hiệu ứng cuộn & chuyển trang ===== */
+        @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+        body { animation: pageIn 0.8s ease both; }
+        :where(a, button, input, select, textarea, img) { transition: color .3s ease, background-color .3s ease, border-color .3s ease, box-shadow .3s ease, opacity .3s ease; }
+        .section { scroll-margin-top: 90px; }
+
+        #scroll-progress { position: fixed; top: 0; left: 0; height: 4px; width: 0; z-index: 3000; background: linear-gradient(90deg, var(--primary), var(--gold)); box-shadow: 0 0 10px rgba(58,134,200,0.6); border-radius: 0 4px 4px 0; transition: width 0.1s linear; }
+
+        .reveal { opacity: 0; translate: var(--rx, 0px) var(--ry, 44px); scale: var(--rs, 1);
+            transition: opacity .8s ease var(--d, 0s), translate .9s cubic-bezier(0.16,1,0.3,1) var(--d, 0s), scale .9s cubic-bezier(0.16,1,0.3,1) var(--d, 0s),
+                        transform .4s cubic-bezier(0.16,1,0.3,1), box-shadow .4s ease, background-color .4s ease, color .4s ease, border-color .4s ease; }
+        .reveal[data-anim="left"]  { --rx: -60px; --ry: 0px; }
+        .reveal[data-anim="right"] { --rx: 60px;  --ry: 0px; }
+        .reveal[data-anim="zoom"]  { --rs: .9; --ry: 30px; }
+        .reveal[data-anim="fade"]  { --ry: 0px; }
+        .reveal.out-top { --ry: -44px; }
+        .reveal.show { opacity: 1; translate: 0 0; scale: 1; }
+        .section-head.reveal .line { width: 0; transition: width 1s ease .3s; }
+        .section-head.reveal.show .line { width: 70px; }
+
+        header { transition: transform .45s cubic-bezier(0.16,1,0.3,1), background .4s ease, padding .4s ease, box-shadow .4s ease; }
+        header.hide { transform: translateY(-115%); }
+        nav a.active { color: var(--primary); }
+        nav a.active::after { width: 100%; }
+        .hero-slides { inset: -14% 0; will-change: transform; }
+        .hero-content { will-change: translate; }
+
+        /* ===== Thẻ tương tác: nghiêng theo con trỏ + trượt hiện dần theo cuộn ===== */
+        .products, .cats { perspective: 1300px; }
+        .scrub { opacity: var(--p, 0); translate: 0 calc((1 - var(--p, 0)) * -56px); scale: calc(0.92 + 0.08 * var(--p, 0));
+            transition: opacity .7s ease var(--d, 0s), translate .9s cubic-bezier(0.16,1,0.3,1) var(--d, 0s), scale .9s cubic-bezier(0.16,1,0.3,1) var(--d, 0s),
+                        transform .55s cubic-bezier(0.16,1,0.3,1), box-shadow .55s ease;
+            will-change: transform, opacity; }
+        .cat-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+        .product-card:hover { box-shadow: 0 30px 60px rgba(40,80,130,0.22); }
+        .product-title { transition: color .3s ease; }
+        .product-card:hover .product-title { color: var(--primary-dark); }
+        /* Ánh sáng chạy theo con trỏ */
+        .product-card::before, .cat-card::before { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; border-radius: inherit; transition: opacity .5s ease;
+            background: radial-gradient(circle 240px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.5), rgba(255,255,255,0) 65%); }
+        .product-card:hover::before, .cat-card:hover::before { opacity: 1; }
+        /* Ảnh và chữ trượt nhẹ ngược hướng con trỏ tạo chiều sâu */
+        .product-img, .cat-card img { translate: calc(var(--tx, 0) * -16px) calc(var(--ty, 0) * -16px); }
+        .cat-info { translate: calc(var(--tx, 0) * 12px) calc(var(--ty, 0) * 8px); }
+        @media (prefers-reduced-motion: reduce) { .scrub { opacity: 1; translate: none; scale: none; } .product-img, .cat-card img, .cat-info { translate: none; } }
+
+        /* ===== Lướt tới đâu hiện tới đó: vào từ dưới bay lên, phía trên mờ dần (cuộn ngược thì ngược lại) ===== */
+        .scrub { opacity: calc(var(--p, 0) * (1 - var(--o, 0)));
+            translate: 0 calc((1 - var(--p, 0)) * 70px - var(--o, 0) * 50px);
+            scale: calc(0.93 + 0.07 * var(--p, 0) - 0.04 * var(--o, 0));
+            transition: opacity .45s ease calc(var(--d, 0s) * 0.5), translate .6s cubic-bezier(0.16,1,0.3,1) calc(var(--d, 0s) * 0.5), scale .6s cubic-bezier(0.16,1,0.3,1) calc(var(--d, 0s) * 0.5),
+                        transform .55s cubic-bezier(0.16,1,0.3,1), box-shadow .55s ease; }
+        @media (prefers-reduced-motion: reduce) { .scrub { opacity: 1; translate: none; scale: none; } }
+
+        /* ===== Hover nhẹ nhàng, mượt và đồng bộ trên toàn trang ===== */
+        :where(a, button, input, select, textarea, img) { transition: color .35s ease, background-color .35s ease, border-color .35s ease, box-shadow .45s ease, opacity .35s ease, transform .6s cubic-bezier(0.22,1,0.36,1); }
+        .scrub { transition: opacity .45s ease calc(var(--d, 0s) * 0.5), translate .6s cubic-bezier(0.16,1,0.3,1) calc(var(--d, 0s) * 0.5), scale .6s cubic-bezier(0.16,1,0.3,1) calc(var(--d, 0s) * 0.5),
+                        transform .6s cubic-bezier(0.22,1,0.36,1), box-shadow .6s ease; }
+        /* Thẻ nâng lên khẽ */
+        .product-card:hover { transform: translateY(-6px); box-shadow: 0 22px 44px rgba(40,80,130,0.15); }
+        .cat-card:hover { transform: translateY(-6px); box-shadow: 0 22px 44px rgba(40,80,130,0.16); }
+        .perk:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(40,80,130,0.13); }
+        .step:hover { transform: translateY(-5px); box-shadow: 0 18px 36px rgba(40,80,130,0.13); }
+        .review:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(40,80,130,0.14); }
+        .hero-card { transition: translate .6s cubic-bezier(0.22,1,0.36,1), box-shadow .6s ease; }
+        .hero-card:hover { translate: 0 -4px; box-shadow: 0 28px 55px rgba(40,80,130,0.2); }
+        /* Ảnh phóng và trượt rất chậm, ánh sáng dịu hơn */
+        .product-img { transition: transform 1.3s cubic-bezier(0.22,1,0.36,1); }
+        .cat-card img { transition: transform 1.5s cubic-bezier(0.22,1,0.36,1); }
+        .product-card:hover .product-img { transform: scale(1.06); }
+        .cat-card:hover img { transform: scale(1.07); }
+        .product-img, .cat-card img { translate: calc(var(--tx, 0) * -10px) calc(var(--ty, 0) * -10px); }
+        .cat-info { translate: calc(var(--tx, 0) * 8px) calc(var(--ty, 0) * 5px); }
+        .product-card::before, .cat-card::before { transition: opacity .8s ease;
+            background: radial-gradient(circle 240px at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.26), rgba(255,255,255,0) 65%); }
+        /* Nút, biểu tượng, liên kết: nhấc lên nhẹ */
+        .btn-primary:hover, .btn-outline:hover, .btn-checkout:hover, .btn-add-cart:hover, .hc-link:hover, .filter-btn:hover, .filter-btn.active { transform: translateY(-2px); }
+        .contact-btn:hover { transform: translateY(-3px) scale(1.05); }
+        .icon-btn:hover { transform: translateY(-2px); }
+        .wish-btn:hover { transform: scale(1.08); }
+        .thumb-img:hover, .related-item:hover, .socials a:hover { transform: translateY(-3px); }
+        .color-swatch:hover { transform: scale(1.08); }
+        nav a:hover { transform: translateY(-1px); }
+        footer a:hover { transform: translateX(4px); }
+
+        /* ===== Bay từ dưới lên khi lăn chuột xuống, bay ngược lại khi lăn lên (rõ hơn) ===== */
+        .scrub { translate: 0 calc((1 - var(--p, 0)) * 120px - var(--o, 0) * 70px);
+                 scale: calc(0.9 + 0.1 * var(--p, 0) - 0.05 * var(--o, 0)); }
+
+        /* ===== Chuyển động cho mọi nút và toàn trang (mềm, có quán tính) ===== */
+        .scrub { transition: transform .7s cubic-bezier(0.22,1,0.36,1), box-shadow .7s ease; }
+        .btn:active, .filter-btn:active, .btn-checkout:active, .btn-add-cart:active, .qa:active, .qv:active, .hc-link:active, .news-form button:active,
+        .code-box button:active, .hero-arrow:active, .icon-btn:active, .qty-btn-large:active, .cart-qty-ctrl button:active, .contact-btn:active, .btn-wish-lg:active, .wish-btn:active, .close-modal:active {
+            transform: scale(0.94) !important; transition-duration: .18s !important; }
+        /* Vệt sáng quét qua nút chính */
+        .btn-primary, .btn-checkout, .btn-add-cart, .qa, .news-form button, .hc-link { position: relative; overflow: hidden; }
+        .btn-primary::before, .btn-checkout::before, .btn-add-cart::before, .qa::before, .news-form button::before, .hc-link::before {
+            content: ''; position: absolute; top: 0; bottom: 0; left: -80%; width: 50%; pointer-events: none; transform: skewX(-20deg);
+            background: linear-gradient(100deg, rgba(255,255,255,0), rgba(255,255,255,0.42), rgba(255,255,255,0)); transition: left 1s cubic-bezier(0.22,1,0.36,1); }
+        .btn-primary:hover::before, .btn-checkout:hover::before, .btn-add-cart:hover::before, .qa:hover::before, .news-form button:hover::before, .hc-link:hover::before { left: 130%; }
+        /* Gợn sóng khi bấm */
+        .ripple { position: absolute; border-radius: 50%; pointer-events: none; background: currentColor; opacity: 0; transform: translate(-50%, -50%) scale(0); animation: ripple .8s cubic-bezier(0.22,1,0.36,1) forwards; }
+        @keyframes ripple { 0% { opacity: .28; transform: translate(-50%, -50%) scale(0); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
+        /* Biểu tượng trong nút chuyển động riêng */
+        .btn i, .btn-checkout i, .hc-link i, .btn-add-cart i { display: inline-block; transition: transform .5s cubic-bezier(0.22,1,0.36,1); }
+        .btn:hover .fa-arrow-right, .btn-checkout:hover .fa-arrow-right, .hc-link:hover .fa-arrow-right { transform: translateX(6px); }
+        .btn-add-cart:hover .fa-cart-plus { animation: wiggle .8s ease; }
+        .btn-primary:hover .fa-shopping-bag, .btn-outline:hover .fa-tags { animation: wiggle .8s ease; }
+        @keyframes wiggle { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-16deg); } 45% { transform: rotate(12deg); } 70% { transform: rotate(-6deg); } }
+        .wish-btn.pop i, .btn-wish-lg.active i { animation: heartPop .6s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes heartPop { 0% { transform: scale(0.3); } 60% { transform: scale(1.4); } 100% { transform: scale(1); } }
+        /* Cửa sổ và giỏ hàng mở êm như lò xo */
+        .modal-overlay, .cart-overlay { transition: opacity .55s ease, visibility .55s ease; }
+        .product-modal, .checkout-box { transition: transform .8s cubic-bezier(0.22,1.15,0.36,1), box-shadow .5s ease; }
+        .cart-modal { transition: right .75s cubic-bezier(0.22,1,0.36,1); }
+        .cart-overlay.active .cart-item { animation: cardIn .6s cubic-bezier(0.22,1,0.36,1) both; }
+        .cart-overlay.active .cart-item:nth-child(2) { animation-delay: .06s; } .cart-overlay.active .cart-item:nth-child(3) { animation-delay: .12s; } .cart-overlay.active .cart-item:nth-child(4) { animation-delay: .18s; }
+        html.smooth-wheel { scroll-behavior: auto; }
     </style>
 </head>
 <body>
+    <div id="scroll-progress"></div>
 
     <div class="topbar"><i class="fas fa-truck-fast"></i> Miễn phí vận chuyển đơn từ 1.000.000đ <i class="fas fa-circle" style="font-size:5px;vertical-align:middle"></i> Nhập mã <b>HUONGLUA10</b> giảm 10% đơn đầu tiên</div>
 
@@ -484,15 +602,15 @@
     <section class="section" id="categories">
         <div class="section-head reveal"><small>Khám phá</small><h2>Danh Mục Nổi Bật</h2><div class="line"></div></div>
         <div class="cats">
-            <div class="cat-card reveal" onclick="goCategory('lua')">
+            <div class="cat-card scrub" onclick="goCategory('lua')">
                 <img src="https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=700&q=80" alt="Lụa tơ tằm" loading="lazy" onerror="this.style.display='none'">
                 <div class="cat-info"><div><h3>Lụa Tơ Tằm</h3><span>Sang trọng &amp; mềm mại</span></div><i class="fas fa-arrow-right"></i></div>
             </div>
-            <div class="cat-card reveal" onclick="goCategory('cotton')">
+            <div class="cat-card scrub" onclick="goCategory('cotton')">
                 <img src="https://images.unsplash.com/photo-1605001007255-6c70a8d5c43d?auto=format&fit=crop&w=700&q=80" alt="Cotton cao cấp" loading="lazy" onerror="this.style.display='none'">
                 <div class="cat-info"><div><h3>Cotton Cao Cấp</h3><span>Thoáng mát &amp; an toàn</span></div><i class="fas fa-arrow-right"></i></div>
             </div>
-            <div class="cat-card reveal" onclick="goCategory('linen')">
+            <div class="cat-card scrub" onclick="goCategory('linen')">
                 <img src="https://images.unsplash.com/photo-1584879207036-7c06eb73f1d3?auto=format&fit=crop&w=700&q=80" alt="Linen" loading="lazy" onerror="this.style.display='none'">
                 <div class="cat-info"><div><h3>Linen / Thô</h3><span>Mộc mạc &amp; thanh lịch</span></div><i class="fas fa-arrow-right"></i></div>
             </div>
@@ -780,9 +898,9 @@
             c.innerHTML = list.map((p, i) => {
                 const off = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
                 return `
-                <div class="product-card" style="animation-delay:${i * 0.07}s" onclick="openProductDetail(${p.id})">
+                <div class="product-card scrub" style="--d:${(i % 4) * 0.08}s" onclick="openProductDetail(${p.id})">
                     <div class="tags">${off ? `<span class="tag sale">-${off}%</span>` : ''}${p.tag && p.tag !== 'sale' ? `<span class="tag ${p.tag}">${tagLabel[p.tag]}</span>` : ''}</div>
-                    <button class="wish-btn ${wishlist.includes(p.id) ? 'active' : ''}" onclick="event.stopPropagation();toggleWish(${p.id})" aria-label="Yêu thích"><i class="${wishlist.includes(p.id) ? 'fas' : 'far'} fa-heart"></i></button>
+                    <button class="wish-btn ${wishlist.includes(p.id) ? 'active' : ''} ${p.id === window.__popId ? 'pop' : ''}" onclick="event.stopPropagation();toggleWish(${p.id})" aria-label="Yêu thích"><i class="${wishlist.includes(p.id) ? 'fas' : 'far'} fa-heart"></i></button>
                     <div class="img-wrapper">
                         <img src="${p.images[0]}" alt="${esc(p.name)}" class="product-img" loading="lazy" ${IMG}>
                         <div class="view-action">
@@ -798,6 +916,8 @@
                     </div>
                 </div>`;
             }).join('');
+            observeReveals();
+            void c.offsetWidth; requestAnimationFrame(updateScrub);
         }
         function setActiveFilter(cat) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
@@ -817,7 +937,7 @@
             const i = wishlist.indexOf(id);
             if (i > -1) { wishlist.splice(i, 1); toast('Đã bỏ khỏi yêu thích', 'fa-heart-crack'); }
             else { wishlist.push(id); toast('Đã thêm vào yêu thích', 'fa-heart'); }
-            bump($('wish-count')); updateWishUI(); renderProducts(); syncDetailWish();
+            bump($('wish-count')); updateWishUI(); window.__popId = id; renderProducts(); window.__popId = null; syncDetailWish();
         }
         function showWishlist() {
             if (!wishlist.length) return toast('Bạn chưa có sản phẩm yêu thích', 'fa-heart');
@@ -1002,11 +1122,39 @@
         }
         setInterval(tick, 1000); tick();
 
-        // Hiệu ứng cuộn
+        // ===== Hiệu ứng cuộn 2 chiều: vào/ra khi lướt lên hoặc xuống =====
+        function initReveal() {
+            // Mọi khối từ phần "lợi ích" trở xuống đều bay lên khi cuộn xuống và bay ngược lại khi cuộn lên
+            const groups = [
+                { sel: '.perk' }, { sel: '.cat-card' }, { sel: '.section-head > *', stack: true }, { sel: '.toolbar' }, { sel: '.result-count' },
+                { sel: '.promo-img' }, { sel: '.promo-text > *', stack: true }, { sel: '.step' }, { sel: '.review' },
+                { sel: '.newsletter' }, { sel: '.foot-grid > div' }, { sel: '.copyright' }
+            ];
+            // Khung chứa chỉ làm nền, phần tử con mới là thứ bay lên (tránh cộng dồn hiệu ứng)
+            document.querySelectorAll('.promo, .section-head').forEach(el => el.classList.remove('reveal'));
+            groups.forEach(g => {
+                let lastParent = null, n = 0;
+                document.querySelectorAll(g.sel).forEach(el => {
+                    if (el.parentElement !== lastParent) { lastParent = el.parentElement; n = 0; }
+                    el.classList.remove('reveal', 'show', 'out-top'); delete el.dataset.anim;
+                    el.classList.add('scrub');
+                    if (g.stack) el.dataset.ord = n;
+                    el.style.setProperty('--d', (n % 4) * 0.1 + 's'); n++;
+                });
+            });
+            observeReveals();
+        }
         const io = new IntersectionObserver(entries => {
-            entries.forEach((en, i) => { if (en.isIntersecting) { setTimeout(() => en.target.classList.add('show'), (i % 4) * 90); io.unobserve(en.target); } });
-        }, { threshold: 0.12 });
-        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+            entries.forEach(en => {
+                const el = en.target;
+                if (en.isIntersecting) { el.classList.remove('out-top'); el.classList.add('show'); }
+                else { el.classList.toggle('out-top', en.boundingClientRect.top < 0); el.classList.remove('show'); }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+        function observeReveals() {
+            document.querySelectorAll('.reveal:not([data-obs])').forEach(el => { el.dataset.obs = 1; io.observe(el); });
+        }
+        initReveal();
 
         // Đếm số thống kê
         const cio = new IntersectionObserver(entries => {
@@ -1067,7 +1215,235 @@
         $('home').addEventListener('mouseleave', heroAuto);
         heroShow(0, true);
 
-        window.onload = () => { renderProducts(); updateCartUI(); updateWishUI(); };
+
+        // ===== Hiệu ứng theo vị trí cuộn: tiến độ, parallax, ẩn/hiện header, đánh dấu menu =====
+        const navLinks = [...document.querySelectorAll('nav a')];
+        const spyIds = navLinks.map(a => a.getAttribute('href').slice(1));
+        let lastY = 0, fxTicking = false;
+        function onScrollFX() {
+            const y = window.scrollY, max = document.documentElement.scrollHeight - innerHeight;
+            $('scroll-progress').style.width = (max > 0 ? y / max * 100 : 0) + '%';
+            // ẩn header khi cuộn xuống, hiện lại khi cuộn lên
+            const hdr = $('header'), typing = document.activeElement === $('search-input');
+            if (y > 420 && y > lastY + 6 && !document.body.classList.contains('lock') && !typing) hdr.classList.add('hide');
+            else if (y < lastY - 6 || y < 300) hdr.classList.remove('hide');
+            lastY = y;
+            // parallax banner
+            if (y < innerHeight * 1.3) {
+                $('hero-slides').style.transform = `translate3d(0, ${y * 0.12}px, 0)`;
+                document.querySelector('.hero-content').style.translate = `0 ${y * 0.16}px`;
+            }
+            // đánh dấu mục menu đang xem
+            let cur = spyIds[0];
+            spyIds.forEach(id => { const el = $(id); if (el && el.getBoundingClientRect().top <= 160) cur = id; });
+            navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+            updateScrub();
+            fxTicking = false;
+        }
+        window.addEventListener('scroll', () => { if (!fxTicking) { fxTicking = true; requestAnimationFrame(onScrollFX); } }, { passive: true });
+        window.addEventListener('resize', onScrollFX);
+
+        // ===== Lưu và khôi phục trạng thái thao tác của người dùng =====
+        const UI_KEY = 'hl_ui';
+        let uiReady = false, saveTimer;
+        const formIds = { name: 'co-name', phone: 'co-phone', address: 'co-address', code: 'co-code', note: 'co-note' };
+        function saveUI(now) {
+            if (!uiReady) return;
+            const run = () => save(UI_KEY, {
+                cat: state.cat, q: $('search-input').value, sort: state.sort, onlyWish: state.onlyWish,
+                y: Math.round(window.scrollY), hero: heroIdx,
+                product: $('product-modal').classList.contains('active') && currentProduct
+                    ? { id: currentProduct.id, color: selectedColor && selectedColor.name, qty: parseInt($('detail-qty').value) || 1 } : null,
+                cart: $('cart-overlay').classList.contains('active'),
+                checkout: $('checkout-modal').classList.contains('active'),
+                form: Object.fromEntries(Object.entries(formIds).map(([k, id]) => [k, $(id).value])),
+                t: Date.now()
+            });
+            if (now) run(); else { clearTimeout(saveTimer); saveTimer = setTimeout(run, 250); }
+        }
+        ['scroll', 'click', 'input', 'change', 'keyup'].forEach(ev => window.addEventListener(ev, () => saveUI(), { passive: true, capture: true }));
+        window.addEventListener('pagehide', () => saveUI(true));
+        document.addEventListener('visibilitychange', () => { if (document.hidden) saveUI(true); });
+
+        function fillForm(f) { Object.entries(formIds).forEach(([k, id]) => { if (f && f[k] != null && f[k] !== '') $(id).value = f[k]; }); }
+        function restoreUI() {
+            const u = load(UI_KEY, null);
+            if (!u) return;
+            state.cat = u.cat || 'all'; state.sort = u.sort || 'default';
+            state.onlyWish = !!u.onlyWish && wishlist.length > 0;
+            state.q = (u.q || '').trim().toLowerCase();
+            $('search-input').value = u.q || ''; $('sort-select').value = state.sort;
+            setActiveFilter(state.cat); renderProducts();
+            if (typeof u.hero === 'number') heroShow(u.hero, true);
+            fillForm(u.form);
+            const goY = () => window.scrollTo({ top: u.y || 0, behavior: 'instant' });
+            goY(); setTimeout(goY, 350);
+            let restored = (u.y || 0) > 400;
+            if (u.product && products.some(p => p.id === u.product.id)) {
+                openProductDetail(u.product.id);
+                const c = currentProduct.colors.find(c => c.name === u.product.color);
+                if (c) { selectedColor = c; renderColors(); }
+                $('detail-qty').value = Math.max(1, u.product.qty); updateDetailTotal();
+                restored = true;
+            } else if (u.checkout && cart.length) {
+                openCheckout(); fillForm(u.form); $('co-total').innerText = formatPrice(calcTotal().total); restored = true;
+            } else if (u.cart) { toggleCart(); restored = true; }
+            if (restored || cart.length) setTimeout(() => toast('Đã khôi phục phiên làm việc của bạn', 'fa-clock-rotate-left'), 600);
+        }
+
+
+        // ===== Thẻ trượt xuống và hiện dần theo vị trí cuộn (mỗi cột lệch nhịp) =====
+        // Động cơ làm mượt: giá trị hiện tại đuổi dần theo giá trị đích → chuyển động mềm như có quán tính
+        let scrubRaf = 0;
+        function scrubTick(now) {
+            let moving = false;
+            document.querySelectorAll('.scrub').forEach(el => {
+                const t = el.__t; if (!t) return;
+                let c = el.__c;
+                if (!c) {
+                    c = el.__c = { p: 0, o: 0, at: now + (parseFloat(el.style.getPropertyValue('--d')) || 0) * 600 };
+                    el.style.setProperty('--p', 0); el.style.setProperty('--o', 0);
+                }
+                if (now < c.at) { moving = true; return; }
+                const dp = t.p - c.p, dO = t.o - c.o;
+                if (Math.abs(dp) > 0.001 || Math.abs(dO) > 0.001) {
+                    c.p += dp * 0.12; c.o += dO * 0.12;
+                    el.style.setProperty('--p', c.p.toFixed(3)); el.style.setProperty('--o', c.o.toFixed(3));
+                    moving = true;
+                } else if (c.p !== t.p || c.o !== t.o) {
+                    c.p = t.p; c.o = t.o;
+                    el.style.setProperty('--p', c.p.toFixed(3)); el.style.setProperty('--o', c.o.toFixed(3));
+                }
+            });
+            scrubRaf = moving ? requestAnimationFrame(scrubTick) : 0;
+        }
+        function absTop(el) { let t = 0; while (el) { t += el.offsetTop; el = el.offsetParent; } return t; }
+        function updateScrub() {
+            const vh = innerHeight, y = window.scrollY, maxScroll = document.documentElement.scrollHeight - innerHeight;
+            document.querySelectorAll('.scrub').forEach(el => {
+                const par = el.parentElement;
+                const frac = par.offsetWidth ? (el.offsetLeft - par.offsetLeft) / par.offsetWidth : 0;
+                const top = absTop(el) - y;
+                const clamp = v => Math.max(0, Math.min(1, v));
+                const ord = +el.dataset.ord || 0;
+                let p = clamp((vh * 0.98 - top) / (vh * 0.42) - frac * 0.35 - ord * 0.12);   // 0 → 1 khi bay lên vào màn hình
+                p = Math.max(p, clamp(1 - (maxScroll - y) / (vh * 0.45)));                  // gần cuối trang thì hiện đủ
+                const cy = top + el.offsetHeight / 2;
+                const o = clamp((vh * 0.30 - cy) / (vh * 0.40));                  // 0 → 1 khi trôi lên và mờ dần ở phía trên
+                el.__t = { p, o };
+            });
+            if (!scrubRaf) scrubRaf = requestAnimationFrame(scrubTick);
+        }
+        document.querySelectorAll('.cat-card').forEach((el, i) => el.style.setProperty('--d', i * 0.12 + 's'));
+        window.addEventListener('resize', updateScrub);
+        window.addEventListener('load', updateScrub);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateScrub);
+        updateScrub();
+
+        // ===== Nghiêng 3D, ánh sáng và parallax ảnh theo con trỏ (làm mượt bằng nội suy) =====
+        (function () {
+            if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            const SEL = '.product-card, .cat-card';
+            const states = new WeakMap();
+            let active = null;
+            const st = el => { let s = states.get(el); if (!s) { s = { tx: 0, ty: 0, cx: 0, cy: 0, raf: 0 }; states.set(el, s); } return s; };
+            function apply(el, s) {
+                const max = el.classList.contains('cat-card') ? 4 : 4.5;
+                el.style.setProperty('--tx', s.cx.toFixed(4)); el.style.setProperty('--ty', s.cy.toFixed(4));
+                el.style.setProperty('--mx', ((s.cx + 0.5) * 100).toFixed(1) + '%');
+                el.style.setProperty('--my', ((s.cy + 0.5) * 100).toFixed(1) + '%');
+                const mag = Math.hypot(s.cx, s.cy);
+                el.style.rotate = mag < 0.002 ? '' : `${(-s.cy).toFixed(4)} ${s.cx.toFixed(4)} 0 ${(mag * 2 * max).toFixed(2)}deg`;
+            }
+            function loop(el) {
+                const s = st(el);
+                s.cx += (s.tx - s.cx) * 0.09; s.cy += (s.ty - s.cy) * 0.09;
+                const done = Math.abs(s.tx - s.cx) < 0.0008 && Math.abs(s.ty - s.cy) < 0.0008;
+                if (done) { s.cx = s.tx; s.cy = s.ty; }
+                apply(el, s);
+                s.raf = done ? 0 : requestAnimationFrame(() => loop(el));
+            }
+            const kick = el => { const s = st(el); if (!s.raf) s.raf = requestAnimationFrame(() => loop(el)); };
+            function release(el) { if (!el) return; const s = st(el); s.tx = 0; s.ty = 0; kick(el); }
+            document.addEventListener('pointermove', e => {
+                if (e.pointerType !== 'mouse') return;
+                const el = e.target.closest ? e.target.closest(SEL) : null;
+                if (el !== active) { release(active); active = el; }
+                if (!el) return;
+                const r = el.getBoundingClientRect(), s = st(el);
+                s.tx = Math.max(-0.5, Math.min(0.5, (e.clientX - r.left) / r.width - 0.5));
+                s.ty = Math.max(-0.5, Math.min(0.5, (e.clientY - r.top) / r.height - 0.5));
+                kick(el);
+            }, { passive: true });
+            document.documentElement.addEventListener('mouseleave', () => { release(active); active = null; });
+        })();
+
+        // ===== Gợn sóng khi bấm + nút "hút" nhẹ theo con trỏ =====
+        (function () {
+            const RIPPLE = '.btn, .filter-btn, .btn-checkout, .btn-add-cart, .qa, .qv, .hc-link, .news-form button, .code-box button, .hero-arrow, .icon-btn, .qty-btn-large, .cart-qty-ctrl button, .close-modal, .close-cart, .btn-wish-lg';
+            document.addEventListener('pointerdown', e => {
+                const host = e.target.closest ? e.target.closest(RIPPLE) : null;
+                if (!host) return;
+                const r = host.getBoundingClientRect(), size = Math.max(r.width, r.height) * 2.4;
+                if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+                host.style.overflow = 'hidden';
+                const sp = document.createElement('span');
+                sp.className = 'ripple';
+                sp.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left}px;top:${e.clientY - r.top}px`;
+                host.appendChild(sp);
+                sp.addEventListener('animationend', () => sp.remove());
+            });
+            if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+            const MAG = '.btn-primary, .btn-outline, .btn-checkout, .btn-add-cart, .hc-link, .icon-btn, .contact-btn, .hero-arrow';
+            let cur = null;
+            const reset = el => { if (el) el.style.translate = ''; };
+            document.addEventListener('pointermove', e => {
+                if (e.pointerType !== 'mouse') return;
+                const el = e.target.closest ? e.target.closest(MAG) : null;
+                if (el !== cur) { reset(cur); cur = el; }
+                if (!el) return;
+                const r = el.getBoundingClientRect();
+                const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2), dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+                el.style.translate = `${(Math.max(-1, Math.min(1, dx)) * 5).toFixed(1)}px ${(Math.max(-1, Math.min(1, dy)) * 4).toFixed(1)}px`;
+            }, { passive: true });
+            document.documentElement.addEventListener('mouseleave', () => { reset(cur); cur = null; });
+        })();
+
+        // ===== Lăn chuột có quán tính: lướt trượt dài và dừng êm (không áp dụng khi mở cửa sổ/giỏ hàng) =====
+        (function () {
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const root = document.documentElement;
+            let target = window.scrollY, current = window.scrollY, raf = 0, lastSet = current;
+            root.classList.add('smooth-wheel');
+            const maxY = () => root.scrollHeight - innerHeight;
+            function tick() {
+                if (Math.abs(window.scrollY - lastSet) > 3) { target = current = window.scrollY; raf = 0; return; } // người dùng kéo thanh cuộn / dùng phím
+                current += (target - current) * 0.11;
+                if (Math.abs(target - current) < 0.4) current = target;
+                lastSet = Math.round(current);
+                window.scrollTo({ top: current, left: 0, behavior: 'instant' });
+                raf = current === target ? 0 : requestAnimationFrame(tick);
+            }
+            window.addEventListener('wheel', e => {
+                if (e.ctrlKey || e.defaultPrevented || document.body.classList.contains('lock')) return;
+                if (e.target.closest && e.target.closest('textarea, select, .modal-overlay, .cart-overlay')) return;
+                if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+                e.preventDefault();
+                if (!raf) { target = current = window.scrollY; lastSet = current; }
+                const dy = e.deltaMode === 1 ? e.deltaY * 32 : e.deltaY;
+                target = Math.max(0, Math.min(maxY(), target + dy));
+                if (!raf) raf = requestAnimationFrame(tick);
+            }, { passive: false });
+            window.addEventListener('scroll', () => { if (!raf) { target = current = window.scrollY; lastSet = current; } }, { passive: true });
+        })();
+
+        try { history.scrollRestoration = 'manual'; } catch (e) {}
+        window.onload = () => {
+            renderProducts(); updateCartUI(); updateWishUI();
+            restoreUI();
+            onScrollFX();
+            setTimeout(() => { uiReady = true; }, 900);
+        };
     </script>
 </body>
 </html>
