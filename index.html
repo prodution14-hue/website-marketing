@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiệm Vải Lụa Mơ - Chuyên Vải Cao Cấp</title>
+    <style>
+        /* CSS Cơ Bản & Khởi tạo */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #fcf9f9;
+            color: #333;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background-color: #fff;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #b76e79; /* Rose gold */
+            text-decoration: none;
+        }
+        .cart-btn {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .cart-btn span {
+            background-color: #b76e79;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Banner (Hero Section) */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1596433809252-260c27459d1a?auto=format&fit=crop&w=1200&q=80') center/cover;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+        .hero h1 { font-size: 36px; margin-bottom: 10px; }
+        .hero p { font-size: 18px; }
+
+        /* Product Grid */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            color: #4a4a4a;
+        }
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        .product-card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        .product-info {
+            padding: 15px;
+            text-align: center;
+        }
+        .product-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .product-price {
+            color: #b76e79;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .btn-add {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .btn-add:hover {
+            background-color: #b76e79;
+        }
+
+        /* Cart Modal */
+        .cart-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: flex-end;
+            z-index: 1000;
+        }
+        .cart-overlay.active { display: flex; }
+        
+        .cart-modal {
+            background: #fff;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.3s forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .cart-item-info h4 { font-size: 14px; margin-bottom: 5px; }
+        .cart-item-info p { color: #b76e79; font-size: 14px; }
+        
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cart-item-actions input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn-remove {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .cart-footer {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .btn-checkout {
+            background-color: #b76e79;
+            color: #fff;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: #fff;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo">Lụa Mơ</a>
+        <button class="cart-btn" onclick="toggleCart()">
+            Giỏ hàng <span id="cart-count">0</span>
+        </button>
+    </header>
+
+    <!-- Banner -->
+    <section class="hero">
+        <h1>Thế Giới Vải Cao Cấp</h1>
+        <p>Cung cấp các loại vải lụa, linen, cotton chất lượng nhất cho trang phục của bạn.</p>
+    </section>
+
+    <!-- Products Section -->
+    <main class="container">
+        <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+        <div class="products" id="product-list">
+            <!-- Sản phẩm sẽ được render bằng JavaScript ở đây -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Tiệm Vải Lụa Mơ. Một trang web demo dữ liệu tĩnh trên 1 file.</p>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="cart-overlay" id="cart-overlay">
+        <div class="cart-modal">
+            <div class="cart-header">
+                <h2>Giỏ hàng của bạn</h2>
+                <button class="close-cart" onclick="toggleCart()">&times;</button>
+            </div>
+            <div class="cart-items" id="cart-items">
+                <!-- Các mặt hàng trong giỏ sẽ hiển thị ở đây -->
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Tổng cộng:</span>
+                    <span id="cart-total-price">0 đ</span>
+                </div>
+                <button class="btn-checkout" onclick="checkout()">Thanh toán (Zalo/Hotline)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Xử Lý Dữ Liệu và Logic -->
+    <script>
+        // Dữ liệu sản phẩm tĩnh (Bạn có thể thêm bớt tùy ý)
+        const products = [
+            {
+                id: 1,
+                name: "Vải Lụa Tơ Tằm Thượng Hạng",
+                price: 250000,
+                image: "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                id: 2,
+                name: "Vải Linen Bột (Nhiều Màu)",
+                price: 120000,
+                image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                id: 3,
+                name: "Vải Cotton 100% Kháng Khuẩn",
+                price: 90000,
+                image: "https://images.unsplash.com/photo-1605001007255-6c70a8d5c43d?auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                id: 4,
+                name: "Vải Gấm Dạ Hội In Chìm",
+                price: 350000,
+                image: "https://images.unsplash.com/photo-1584879207036-7c06eb73f1d3?auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                id: 5,
+                name: "Vải Voan Kính Chiffon",
+                price: 850000,
+                image: "https://images.unsplash.com/photo-1596443686812-2f45229eebc3?auto=format&fit=crop&w=500&q=60"
+            },
+            {
+                id: 6,
+                name: "Vải Tuyết Mưa May Vest",
+                price: 160000,
+                image: "https://images.unsplash.com/photo-1596636733221-a477341ed8ad?auto=format&fit=crop&w=500&q=60"
+            }
+        ];
+
+        let cart = [];
+
+        // Hàm định dạng tiền Tệ Việt Nam
+        const formatPrice = (price) => {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+        };
+
+        // Render danh sách sản phẩm ra màn hình
+        function renderProducts() {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.name}" class="product-img">
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-price">${formatPrice(product.price)} / mét</p>
+                        <button class="btn-add" onclick="addToCart(${product.id})">Thêm vào giỏ</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Đóng/Mở Modal Giỏ Hàng
+        function toggleCart() {
+            const overlay = document.getElementById('cart-overlay');
+            overlay.classList.toggle('active');
+        }
+
+        // Thêm sản phẩm vào giỏ
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+            
+            if(cartItem) {
+                cartItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCartUI();
+            alert(`Đã thêm ${product.name} vào giỏ hàng!`);
+        }
+
+        // Cập nhật số lượng sản phẩm
+        function changeQuantity(productId, newQuantity) {
+            if(newQuantity < 1) return;
+            const item = cart.find(i => i.id === productId);
+            if(item) item.quantity = parseInt(newQuantity);
+            updateCartUI();
+        }
+
+        // Xóa sản phẩm khỏi giỏ
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        // Cập nhật giao diện giỏ hàng
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotalPrice = document.getElementById('cart-total-price');
+
+            // Cập nhật số lượng badge
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.innerText = totalItems;
+
+            // Render danh sách giỏ hàng
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="text-align:center; color:#999; margin-top:20px;">Giỏ hàng trống.</p>';
+                cartTotalPrice.innerText = '0 đ';
+                return;
+            }
+
+            cartItemsContainer.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <p>${formatPrice(item.price)}</p>
+                    </div>
+                    <div class="cart-item-actions">
+                        <input type="number" min="1" value="${item.quantity}" onchange="changeQuantity(${item.id}, this.value)">
+                        <button class="btn-remove" onclick="removeFromCart(${item.id})">Xóa</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Tính tổng tiền
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotalPrice.innerText = formatPrice(total);
+        }
+
+        // Xử lý nút thanh toán
+        function checkout() {
+            if(cart.length === 0) {
+                alert("Giỏ hàng của bạn đang trống!");
+                return;
+            }
+            // Logic đơn giản cho web tĩnh: Đóng gói đơn hàng thành 1 tin nhắn để gửi qua Zalo/Facebook
+            let orderText = "Chào tiệm, tôi muốn đặt các loại vải sau:\n";
+            cart.forEach(item => {
+                orderText += `- ${item.name}: ${item.quantity} mét\n`;
+            });
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            orderText += `Tổng tiền: ${formatPrice(total)}`;
+            
+            alert(orderText + "\n\n(Đây là trang demo tĩnh. Ở thực tế, nút này có thể dùng thẻ <a> để dẫn đến Zalo.me/SĐT với nội dung trên).");
+        }
+
+        // Khởi chạy khi load trang
+        window.onload = () => {
+            renderProducts();
+            updateCartUI();
+        };
+    </script>
+</body>
+</html>
